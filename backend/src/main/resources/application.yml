@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: monolith-app
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/flightready}
+    username: ${SPRING_DATASOURCE_USERNAME:flightready}
+    password: ${SPRING_DATASOURCE_PASSWORD:flightready}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+server:
+  port: 8080
