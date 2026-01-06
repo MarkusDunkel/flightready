@@ -14,6 +14,7 @@ import { Input } from './components/ui/input';
 import { Label } from './components/ui/label';
 import { Textarea } from './components/ui/textarea';
 import type { Launchsite, LaunchsitePayload } from './types';
+import './App.scss';
 
 const initialForm: LaunchsitePayload = {
   name: '',
@@ -83,40 +84,38 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto flex min-h-screen max-w-6xl">
-        <aside className="hidden w-64 flex-col gap-6 border-r border-border bg-card/60 p-6 md:flex">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-              Navigation
-            </p>
-            <h2 className="mt-3 text-lg font-semibold">Flightready</h2>
+    <div className="app">
+      <div className="app__layout">
+        <aside className="app__sidebar">
+          <div className="app__sidebar-header">
+            <p className="app__sidebar-label">Navigation</p>
+            <h2 className="app__sidebar-title">Flightready</h2>
           </div>
-          <nav className="flex flex-col gap-2">
-            <Button variant="secondary" className="justify-start" asChild>
+          <nav className="app__nav">
+            <Button variant="secondary" className="app__nav-button" asChild>
               <a href="#">Launchsites</a>
             </Button>
           </nav>
-          <Card className="border-dashed">
+          <Card className="app__status-card">
             <CardHeader>
-              <CardTitle className="text-base">Status</CardTitle>
+              <CardTitle className="app__status-title">Status</CardTitle>
               <CardDescription>API connection health</CardDescription>
             </CardHeader>
-            <CardContent className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              <span className="text-sm text-muted-foreground">
+            <CardContent className="app__status-content">
+              <span className="app__status-indicator" />
+              <span className="app__status-text">
                 {loading ? 'Syncing data…' : 'Live updates ready'}
               </span>
             </CardContent>
           </Card>
         </aside>
 
-        <main className="flex-1 px-6 py-10">
-          <div className="flex flex-col gap-8">
-            <header className="flex flex-col gap-3">
-              <Badge className="w-fit">Operations</Badge>
-              <h1 className="text-3xl font-semibold tracking-tight">Launchsites</h1>
-              <p className="text-muted-foreground">
+        <main className="app__content">
+          <div className="app__content-inner">
+            <header className="app__page-header">
+              <Badge className="app__page-badge">Operations</Badge>
+              <h1 className="app__page-title">Launchsites</h1>
+              <p className="app__page-subtitle">
                 Track launchsite coordinates, launch directions, and mission notes.
               </p>
             </header>
@@ -127,8 +126,8 @@ function App() {
                 <CardDescription>Provide precise coordinates and heading ranges.</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-2">
-                  <div className="space-y-2">
+                <form onSubmit={handleSubmit} className="app__form">
+                  <div className="app__form-field">
                     <Label htmlFor="name">Name</Label>
                     <Input
                       id="name"
@@ -139,7 +138,7 @@ function App() {
                       placeholder="Cape Canaveral"
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="app__form-field">
                     <Label htmlFor="latitude">Latitude</Label>
                     <Input
                       id="latitude"
@@ -151,7 +150,7 @@ function App() {
                       required
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="app__form-field">
                     <Label htmlFor="longitude">Longitude</Label>
                     <Input
                       id="longitude"
@@ -163,7 +162,7 @@ function App() {
                       required
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="app__form-field">
                     <Label htmlFor="directionStart">Direction start</Label>
                     <Input
                       id="directionStart"
@@ -175,7 +174,7 @@ function App() {
                       required
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="app__form-field">
                     <Label htmlFor="directionEnd">Direction end</Label>
                     <Input
                       id="directionEnd"
@@ -187,7 +186,7 @@ function App() {
                       required
                     />
                   </div>
-                  <div className="space-y-2 lg:col-span-2">
+                  <div className="app__form-field app__form-field--full">
                     <Label htmlFor="info">Info</Label>
                     <Textarea
                       id="info"
@@ -198,7 +197,7 @@ function App() {
                       rows={3}
                     />
                   </div>
-                  <div className="lg:col-span-2">
+                  <div className="app__form-actions">
                     <Button type="submit" disabled={saving}>
                       {saving ? 'Saving…' : 'Create launchsite'}
                     </Button>
@@ -214,52 +213,43 @@ function App() {
               </CardHeader>
               <CardContent>
                 {loading ? (
-                  <p className="text-sm text-muted-foreground">Loading launchsites…</p>
+                  <p className="app__muted-text">Loading launchsites…</p>
                 ) : launchsites.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
-                    No launchsites yet. Add one above.
-                  </p>
+                  <p className="app__muted-text">No launchsites yet. Add one above.</p>
                 ) : (
-                  <ul className="flex flex-col gap-4">
+                  <ul className="app__list">
                     {launchsites.map((launchsite) => (
-                      <li
-                        key={launchsite.id}
-                        className="flex flex-col gap-4 rounded-lg border border-border bg-background/40 p-4 lg:flex-row lg:items-center lg:justify-between"
-                      >
-                        <div className="space-y-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="text-lg font-semibold">{launchsite.name}</h3>
+                      <li key={launchsite.id} className="app__list-item">
+                        <div className="app__list-body">
+                          <div className="app__list-heading">
+                            <h3 className="app__list-title">{launchsite.name}</h3>
                             <Badge variant="secondary">Active</Badge>
                           </div>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="app__list-meta">
                             Lat {launchsite.latitude.toFixed(4)}, Lng{' '}
                             {launchsite.longitude.toFixed(4)}
                           </p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="app__list-meta">
                             Directions: {launchsite.directionStart}° → {launchsite.directionEnd}°
                           </p>
                           {launchsite.info ? (
-                            <p className="text-sm text-muted-foreground">
-                              {launchsite.info}
-                            </p>
+                            <p className="app__list-info">{launchsite.info}</p>
                           ) : null}
                         </div>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          onClick={() => handleDelete(launchsite.id)}
-                        >
-                          Delete
-                        </Button>
+                        <div className="app__list-actions">
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={() => handleDelete(launchsite.id)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
                       </li>
                     ))}
                   </ul>
                 )}
-                {error ? (
-                  <div className="mt-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
-                    {error}
-                  </div>
-                ) : null}
+                {error ? <div className="app__error">{error}</div> : null}
               </CardContent>
             </Card>
           </div>
