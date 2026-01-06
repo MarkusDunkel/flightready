@@ -70,117 +70,130 @@ function App() {
     }
   };
 
-  console.log('launchsites: ', launchsites);
-
   return (
-    <div className="app">
-      <header>
-        <h1>FlightReady Launchsites</h1>
-        <p>Track launchsites with coordinates, directions, and notes.</p>
-      </header>
+    <div className="app-shell">
+      <aside className="sidebar">
+        <div className="sidebar-header">Navigation</div>
+        <nav className="sidebar-nav">
+          <a className="nav-item active" href="#">
+            Launchsites
+          </a>
+        </nav>
+      </aside>
 
-      <section className="panel">
-        <h2>Add a launchsite</h2>
-        <form onSubmit={handleSubmit} className="form-grid">
-          <label>
-            Name
-            <input
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-              placeholder="Cape Canaveral"
-            />
-          </label>
-          <label>
-            Latitude
-            <input
-              name="latitude"
-              type="number"
-              step="0.000001"
-              value={form.latitude}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Longitude
-            <input
-              name="longitude"
-              type="number"
-              step="0.000001"
-              value={form.longitude}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Direction start
-            <input
-              name="directionStart"
-              type="number"
-              step="0.1"
-              value={form.directionStart}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Direction end
-            <input
-              name="directionEnd"
-              type="number"
-              step="0.1"
-              value={form.directionEnd}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label className="full">
-            Info
-            <textarea
-              name="info"
-              value={form.info}
-              onChange={handleChange}
-              placeholder="Optional notes"
-              rows={3}
-            />
-          </label>
-          <button type="submit" disabled={saving}>
-            {saving ? 'Saving...' : 'Create launchsite'}
-          </button>
-        </form>
-      </section>
+      <div className="app-content">
+        <main className="page">
+          <div className="page-header">
+            <h1>Flightready</h1>
+            <h2>Launchsites</h2>
+            <p>Track launchsites with coordinates, directions, and notes.</p>
+          </div>
 
-      <section className="panel">
-        <h2>Launchsites</h2>
-        {loading ? (
-          <p>Loading launchsites...</p>
-        ) : launchsites.length === 0 ? (
-          <p>No launchsites yet. Add one above.</p>
-        ) : (
-          <ul className="list">
-            {launchsites.map((launchsite) => (
-              <li key={launchsite.id}>
-                <div>
-                  <strong>{launchsite.name}</strong>
-                  <p>
-                    Lat {launchsite.latitude.toFixed(4)}, Lng {launchsite.longitude.toFixed(4)}
-                  </p>
-                  <p>
-                    Directions: {launchsite.directionStart}° → {launchsite.directionEnd}°
-                  </p>
-                  {launchsite.info ? <p className="muted">{launchsite.info}</p> : null}
-                </div>
-                <button type="button" onClick={() => handleDelete(launchsite.id)}>
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-        {error ? <p className="error">{error}</p> : null}
-      </section>
+          <section className="panel">
+            <h3>Add a launchsite</h3>
+            <form onSubmit={handleSubmit} className="form-grid">
+              <label>
+                Name
+                <input
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  required
+                  placeholder="Cape Canaveral"
+                />
+              </label>
+              <label>
+                Latitude
+                <input
+                  name="latitude"
+                  type="number"
+                  step="0.000001"
+                  value={form.latitude}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <label>
+                Longitude
+                <input
+                  name="longitude"
+                  type="number"
+                  step="0.000001"
+                  value={form.longitude}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <label>
+                Direction start
+                <input
+                  name="directionStart"
+                  type="number"
+                  step="0.1"
+                  value={form.directionStart}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <label>
+                Direction end
+                <input
+                  name="directionEnd"
+                  type="number"
+                  step="0.1"
+                  value={form.directionEnd}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <label className="full">
+                Info
+                <textarea
+                  name="info"
+                  value={form.info}
+                  onChange={handleChange}
+                  placeholder="Optional notes"
+                  rows={3}
+                />
+              </label>
+              <button type="submit" disabled={saving}>
+                {saving ? 'Saving...' : 'Create launchsite'}
+              </button>
+            </form>
+          </section>
+
+          <section className="panel">
+            <h3>Launchsites</h3>
+            {loading ? (
+              <p>Loading launchsites...</p>
+            ) : launchsites.length === 0 ? (
+              <p>No launchsites yet. Add one above.</p>
+            ) : (
+              <ul className="list">
+                {launchsites.map((launchsite) => (
+                  <li key={launchsite.id}>
+                    <div>
+                      <strong>{launchsite.name}</strong>
+                      <p>
+                        Lat {launchsite.latitude.toFixed(4)}, Lng{' '}
+                        {launchsite.longitude.toFixed(4)}
+                      </p>
+                      <p>
+                        Directions: {launchsite.directionStart}° → {launchsite.directionEnd}°
+                      </p>
+                      {launchsite.info ? <p className="muted">{launchsite.info}</p> : null}
+                    </div>
+                    <button type="button" onClick={() => handleDelete(launchsite.id)}>
+                      Delete
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {error ? <p className="error">{error}</p> : null}
+          </section>
+        </main>
+      </div>
     </div>
   );
 }
