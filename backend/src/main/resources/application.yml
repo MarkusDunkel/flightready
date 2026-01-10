@@ -14,5 +14,11 @@ spring:
           time_zone: UTC
   flyway:
     enabled: true
+
+weather:
+  meteoblue:
+    base-url: https://my.meteoblue.com
+    token: ${METEOBLUE_API_KEY}
+
 server:
   port: 8080
