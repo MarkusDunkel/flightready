@@ -14,8 +14,10 @@ import java.util.UUID;
 
 @Service
 public class LaunchsiteService {
-    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(),
-            4326);
+
+    private static final int SRID_WGS84 = 4326;
+    private static final GeometryFactory GEOMETRY_FACTORY =
+            new GeometryFactory(new PrecisionModel(), SRID_WGS84);
 
     private final LaunchsiteRepository repository;
 
@@ -33,14 +35,16 @@ public class LaunchsiteService {
 
     @Transactional
     public LaunchsiteResponse create(LaunchsiteRequest request) {
-        Launchsite launchsite = new Launchsite(UUID.randomUUID(),
+        Launchsite launchsite = new Launchsite(
+                UUID.randomUUID(),
                 request.name(),
-                toPoint(request.latitude(),
-                        request.longitude()),
+                toPoint(request.latitude(), request.longitude()),
                 request.directionStart(),
                 request.directionEnd(),
                 request.asl(),
-                request.info());
+                request.info()
+        );
+
         Launchsite saved = repository.save(launchsite);
         return toResponse(saved);
     }
@@ -50,53 +54,55 @@ public class LaunchsiteService {
         Launchsite launchsite = repository.findById(id)
                 .orElseThrow(() -> new LaunchsiteNotFoundException(id));
 
-        launchsite.updateDetails(request.name(),
-                toPoint(request.latitude(),
-                        request.longitude()),
+        launchsite.updateDetails(
+                request.name(),
+                toPoint(request.latitude(), request.longitude()),
                 request.directionStart(),
                 request.directionEnd(),
                 request.asl(),
-                request.info());
+                request.info()
+        );
 
         return toResponse(launchsite);
     }
 
     @Transactional
     public void delete(UUID id) {
-        if (!repository.existsById(id)) {
-            throw new LaunchsiteNotFoundException(id);
-        }
-        repository.deleteById(id);
+        Launchsite launchsite = repository.findById(id)
+                .orElseThrow(() -> new LaunchsiteNotFoundException(id));
+        repository.delete(launchsite);
     }
 
     private LaunchsiteResponse toResponse(Launchsite launchsite) {
         Point point = launchsite.getLocation();
-        Double latitude = null;
-        Double longitude = null;
-        if (point != null) {
-            latitude = point.getY();
-            longitude = point.getX();
-        }
+        Double latitude = point == null ? null : point.getY();
+        Double longitude = point == null ? null : point.getX();
 
-        return new LaunchsiteResponse(launchsite.getId(),
+        return new LaunchsiteResponse(
+                launchsite.getId(),
                 launchsite.getName(),
                 latitude,
                 longitude,
                 launchsite.getDirectionStart(),
                 launchsite.getDirectionEnd(),
                 launchsite.getAsl(),
-                launchsite.getInfo());
+                launchsite.getInfo()
+        );
     }
 
     private Point toPoint(Double latitude, Double longitude) {
         if (latitude == null || longitude == null) {
             throw new IllegalArgumentException("Latitude and longitude must not be null");
         }
-        Coordinate coordinate = new Coordinate(longitude,
-                latitude);
-        Point point = GEOMETRY_FACTORY.createPoint(coordinate);
-        point.setSRID(4326);
+        if (latitude < -90.0 || latitude > 90.0) {
+            throw new IllegalArgumentException("Latitude out of range: " + latitude);
+        }
+        if (longitude < -180.0 || longitude > 180.0) {
+            throw new IllegalArgumentException("Longitude out of range: " + longitude);
+        }
 
+        Point point = GEOMETRY_FACTORY.createPoint(new Coordinate(longitude, latitude));
+        point.setSRID(SRID_WGS84);
         return point;
     }
 }

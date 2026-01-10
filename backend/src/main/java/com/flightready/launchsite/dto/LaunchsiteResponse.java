@@ -5,10 +5,10 @@ import java.util.UUID;
 public record LaunchsiteResponse(
         UUID id,
         String name,
-        Double latitude,
-        Double longitude,
-        Double directionStart,
-        Double directionEnd,
-        Integer asl,
+        double latitude,
+        double longitude,
+        double directionStart,
+        double directionEnd,
+        int asl,
         String info
 ) {}
