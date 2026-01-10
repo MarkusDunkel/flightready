@@ -3,69 +3,26 @@ package com.flightready.launchsite.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class LaunchsiteRequest {
-    @NotBlank
-    private String name;
+public record LaunchsiteRequest(
 
-    @NotNull
-    private Double latitude;
+        @NotBlank
+        String name,
 
-    @NotNull
-    private Double longitude;
+        @NotNull
+        Double latitude,
 
-    @NotNull
-    private Double directionStart;
+        @NotNull
+        Integer asl,
 
-    @NotNull
-    private Double directionEnd;
+        @NotNull
+        Double longitude,
 
-    private String info;
+        @NotNull
+        Double directionStart,
 
-    public String getName() {
-        return name;
-    }
+        @NotNull
+        Double directionEnd,
 
-    public void setName(String name) {
-        this.name = name;
-    }
+        String info
 
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public Double getDirectionStart() {
-        return directionStart;
-    }
-
-    public void setDirectionStart(Double directionStart) {
-        this.directionStart = directionStart;
-    }
-
-    public Double getDirectionEnd() {
-        return directionEnd;
-    }
-
-    public void setDirectionEnd(Double directionEnd) {
-        this.directionEnd = directionEnd;
-    }
-
-    public String getInfo() {
-        return info;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
-    }
-}
+) {}

@@ -7,13 +7,15 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class LaunchsiteService {
-    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
+    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(),
+            4326);
 
     private final LaunchsiteRepository repository;
 
@@ -21,6 +23,7 @@ public class LaunchsiteService {
         this.repository = repository;
     }
 
+    @Transactional(readOnly = true)
     public List<LaunchsiteResponse> findAll() {
         return repository.findAll()
                 .stream()
@@ -28,29 +31,37 @@ public class LaunchsiteService {
                 .toList();
     }
 
+    @Transactional
     public LaunchsiteResponse create(LaunchsiteRequest request) {
-        Launchsite launchsite = new Launchsite(
-                UUID.randomUUID(),
-                request.getName(),
-                toPoint(request.getLatitude(), request.getLongitude()),
-                request.getDirectionStart(),
-                request.getDirectionEnd(),
-                request.getInfo()
-        );
-        return toResponse(repository.save(launchsite));
+        Launchsite launchsite = new Launchsite(UUID.randomUUID(),
+                request.name(),
+                toPoint(request.latitude(),
+                        request.longitude()),
+                request.directionStart(),
+                request.directionEnd(),
+                request.asl(),
+                request.info());
+        Launchsite saved = repository.save(launchsite);
+        return toResponse(saved);
     }
 
+    @Transactional
     public LaunchsiteResponse update(UUID id, LaunchsiteRequest request) {
         Launchsite launchsite = repository.findById(id)
                 .orElseThrow(() -> new LaunchsiteNotFoundException(id));
-        launchsite.setName(request.getName());
-        launchsite.setLocation(toPoint(request.getLatitude(), request.getLongitude()));
-        launchsite.setDirectionStart(request.getDirectionStart());
-        launchsite.setDirectionEnd(request.getDirectionEnd());
-        launchsite.setInfo(request.getInfo());
-        return toResponse(repository.save(launchsite));
+
+        launchsite.updateDetails(request.name(),
+                toPoint(request.latitude(),
+                        request.longitude()),
+                request.directionStart(),
+                request.directionEnd(),
+                request.asl(),
+                request.info());
+
+        return toResponse(launchsite);
     }
 
+    @Transactional
     public void delete(UUID id) {
         if (!repository.existsById(id)) {
             throw new LaunchsiteNotFoundException(id);
@@ -66,21 +77,26 @@ public class LaunchsiteService {
             latitude = point.getY();
             longitude = point.getX();
         }
-        return new LaunchsiteResponse(
-                launchsite.getId(),
+
+        return new LaunchsiteResponse(launchsite.getId(),
                 launchsite.getName(),
                 latitude,
                 longitude,
                 launchsite.getDirectionStart(),
                 launchsite.getDirectionEnd(),
-                launchsite.getInfo()
-        );
+                launchsite.getAsl(),
+                launchsite.getInfo());
     }
 
     private Point toPoint(Double latitude, Double longitude) {
-        Coordinate coordinate = new Coordinate(longitude, latitude);
+        if (latitude == null || longitude == null) {
+            throw new IllegalArgumentException("Latitude and longitude must not be null");
+        }
+        Coordinate coordinate = new Coordinate(longitude,
+                latitude);
         Point point = GEOMETRY_FACTORY.createPoint(coordinate);
         point.setSRID(4326);
+
         return point;
     }
 }
